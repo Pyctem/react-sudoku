@@ -1,7 +1,7 @@
-import { TCellKey, TCellValue } from "../component/CCell";
+import { TCell, TCellKey, TCellValue } from "../component/CCell";
 import {TCells} from "../component/CTable";
 
-export function isDifferent<T>(value: T | Array<T>, ...args: Array<T>): boolean {
+export function isUnique<T>(value: T | Array<T>, ...args: Array<T>): boolean {
     if (Array.isArray(value)) {
         const set = new Set(value);
         return set.size === value.length;
@@ -15,34 +15,34 @@ export function generateRandomInteger(max: number, min: number = 0): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function random(count: number): [TCellKey, TCellValue] {
+export function generateRandomCell(count: number): [number, number, number] {
     const value = generateRandomInteger(count, 1);
-    const cell = generateRandomInteger(Math.pow(count, 2), 1);
-    const x = Math.ceil(cell / count);
-    const y = cell % count || count;
-    return [`${x}_${y}`, value];
+    const coords = generateRandomInteger(Math.pow(count, 2), 1);
+    const row = Math.ceil(coords / count);
+    const col = coords % count || count;
+    return [row, col, value];
 }
 
-export function setCell(cells: TCells, key: TCellKey, value: TCellValue): boolean {
-    if (Reflect.has(cells, key)) {
-        Reflect.set(cells, key, value);
-        return true;
-    }
-    return false;
+export function setCell(cell: TCell, key: string, value: any): boolean {
+    return Reflect.set(cell, key, value);
 }
 
 export function fillCell(cells: TCells): boolean {
-    const [key, value] = random(9);
-    if (Reflect.get(cells, key)) {
+    const [row, col, value] = generateRandomCell(9);
+    const square = getSquareByPosition(row, col);
+    const key = `${row}_${col}`;
+    const cell = Reflect.get(cells, key)
+    if (cell?.value) {
         return false;
     }
-    const [row, col] = key.split('_');
-    const valuesByRow = getValuesByRow(cells, Number(row));
-    const valuesByCol = getValuesByCol(cells, Number(col));
-    const isUniqueByRow = isDifferent([...valuesByRow, value]);
-    const isUniqueByCol = isDifferent([...valuesByCol, value]);
-    if (isUniqueByRow && isUniqueByCol) {
-        return setCell(cells, key, value);
+    const valuesByRow = getValuesByRow(cells, row);
+    const valuesByCol = getValuesByCol(cells, col);
+    const valuesBySquare = getValuesBySquare(cells, square);
+    const isUniqueByRow = isUnique([...valuesByRow, value]);
+    const isUniqueByCol = isUnique([...valuesByCol, value]);
+    const isUniqueBySquare = isUnique([...valuesBySquare, value]);
+    if (isUniqueByRow && isUniqueByCol && isUniqueBySquare) {        
+        return setCell(cell, 'value', value) && setCell(cell, 'readonly', true);
     }
     return false;
 }
@@ -55,20 +55,18 @@ export function fillCells(cells: TCells, count: number): void {
     }
 }
 
-export function getValuesByRow(cells: TCells, row: number): Array<number> {
-    return Object.keys(cells)
-        .filter(key => Reflect.get(cells, key) && key.trim().startsWith(String(row)))
-        .map(key => Reflect.get(cells, key));
+export function getSquareByPosition(row: number, col: number): string {
+    return `${Math.ceil(row / 3)}${Math.ceil(col / 3)}`;
 }
 
-export function getValuesByCol(cells: TCells, col: number): Array<number> {
-    return Object.keys(cells)
-        .filter(key => Reflect.get(cells, key) && key.trim().endsWith(String(col)))
-        .map(key => Reflect.get(cells, key));
+export function getValuesByRow(cells: TCells, row: number): Array<TCellValue> {
+    return Object.values(cells).filter(cell => cell.row === row && Boolean(cell.value)).map(cell => cell.value);
 }
 
-export function getValuesBySquare(cells: TCells, col: number): Array<number> {
-    return Object.keys(cells)
-        .filter(key => Reflect.get(cells, key) && key.trim().endsWith(`_${col}`))
-        .map(key => Reflect.get(cells, key));
+export function getValuesByCol(cells: TCells, col: number): Array<TCellValue> {
+    return Object.values(cells).filter(cell => cell.col === col && Boolean(cell.value)).map(cell => cell.value);
+}
+
+export function getValuesBySquare(cells: TCells, square: string): Array<TCellValue> {
+    return Object.values(cells).filter(cell => cell.square === square && Boolean(cell.value)).map(cell => cell.value);
 }

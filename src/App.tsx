@@ -1,7 +1,8 @@
 import React from 'react';
 import './App.css';
 import CTable from "./component/CTable";
-import { fillCells } from "./lib";
+import { TCell } from "./component/CCell";
+import { fillCells, getSquareByPosition } from "./lib";
 
 function App() {
     const count = 9;
@@ -13,13 +14,29 @@ function App() {
         while (start <= total) {
             const x = Math.ceil(start / count);
             const y = start % count || count;
-            Reflect.set(cells, `${x}_${y}`, null)
+            const cell = new Cell(x, y);
+            Reflect.set(cells, `${x}_${y}`, cell);
             start++;
         }
         return cells
     }
 
+    class Cell implements TCell {
+        row = 0;
+        col = 0;
+        square = '';
+        value = null;
+        readonly = false;
+        constructor(x: number, y: number) {
+            this.row = x;
+            this.col = y;
+            this.square = getSquareByPosition(x, y);
+        }
+    }
+
     const cells = createCells(count);
+
+    console.log(cells)
 
     fillCells(cells, 28);
 

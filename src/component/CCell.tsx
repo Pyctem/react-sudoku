@@ -1,10 +1,17 @@
 type TCCell = {
-  value: TCellValue;
+  cell: TCell;
 };
 
 export type TCellKey = string;
 export type TCellValue = number | null;
+export type TCell = {
+  row: number;
+  col: number;
+  square: string;
+  value: TCellValue;
+  readonly: boolean;
+}
 
-export default function CCell({ value }: TCCell) {
-    return <div className='cell'>{value}</div>
+export default function CCell({ cell }: TCCell) {
+    return <div className='cell'>{cell.value}</div>
 }
