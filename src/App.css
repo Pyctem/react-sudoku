@@ -13,7 +13,7 @@
   font-size: calc(10px + 2vmin);
 }
 
-.table {
+.board {
   display: grid;
   gap: 1px;
   grid-template-rows: repeat(9, 1fr);

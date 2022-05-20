@@ -1,25 +1,12 @@
 import React from 'react';
-import './App.css';
-import CTable from "./component/CTable";
+import CBoard from "./component/CBoard";
 import { TCell } from "./component/CCell";
-import { fillCells, getSquareByPosition } from "./lib";
+import { generateBoard, getSquareByPosition } from "./lib";
+import './App.css';
 
 function App() {
-    const count = 9;
-
-    function createCells(count: number) {
-        let total = Math.pow(count, 2);
-        let start = 1;
-        let cells = {};
-        while (start <= total) {
-            const x = Math.ceil(start / count);
-            const y = start % count || count;
-            const cell = new Cell(x, y);
-            Reflect.set(cells, `${x}_${y}`, cell);
-            start++;
-        }
-        return cells
-    }
+    const size = 9;
+    const board = generateBoard(size);
 
     class Cell implements TCell {
         row = 0;
@@ -34,16 +21,14 @@ function App() {
         }
     }
 
-    const cells = createCells(count);
-
-    console.log(cells)
-
-    fillCells(cells, 28);
+    if (!board) {
+        return null;
+    }
 
     return (
         <div className="App">
             <header className="App-header">Sudoku</header>
-            <CTable cells={cells} />
+            <CBoard board={board} />
         </div>
     );
 }

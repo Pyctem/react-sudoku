@@ -1,5 +1,5 @@
 type TCCell = {
-  cell: TCell;
+  value: string;
 };
 
 export type TCellKey = string;
@@ -12,6 +12,6 @@ export type TCell = {
   readonly: boolean;
 }
 
-export default function CCell({ cell }: TCCell) {
-    return <div className='cell'>{cell.value}</div>
+export default function CCell({ value }: TCCell) {
+    return <div className='cell'>{value}</div>
 }
