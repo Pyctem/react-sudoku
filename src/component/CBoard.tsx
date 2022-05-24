@@ -1,8 +1,4 @@
-import CCell, { TCellKey, TCell } from "./CCell";
-
-export type TCells = {
-    [key: TCellKey]: TCell;
-}
+import CCell from "./CCell";
 
 export type TBoard = Array<Array<string>>
 

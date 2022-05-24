@@ -2,7 +2,6 @@ type TCCell = {
   value: string;
 };
 
-export type TCellKey = string;
 export type TCellValue = number | null;
 export type TCell = {
   row: number;
