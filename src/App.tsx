@@ -3,6 +3,7 @@ import CBoard from "./component/CBoard";
 import { TCell } from "./component/CCell";
 import { generateBoard, getSquareByPosition } from "./lib";
 import './App.css';
+import { CControls } from './component/CControls';
 
 function App() {
     const size = 9;
@@ -29,6 +30,7 @@ function App() {
         <div className="App">
             <header className="App-header">Sudoku</header>
             <CBoard board={board} />
+            <CControls board={board} />
         </div>
     );
 }

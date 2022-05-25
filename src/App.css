@@ -31,3 +31,37 @@
   justify-content: center;
   background-color: #282c34;
 }
+
+.controls {
+  padding: 20px 0;
+  display: grid;
+  gap: 7px;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.control {
+  width: 50px;
+  height: 50px;
+  color: white;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .3);
+  background: transparent;
+}
+
+.control .text {
+  font-size: 1.7rem;
+}
+
+.control .count {
+  font-size: .6rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  line-height: 1;
+  text-align: center;
+}
