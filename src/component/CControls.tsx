@@ -1,11 +1,14 @@
+import { Dispatch } from "react";
 import { TBoard } from "./CBoard";
-import { CContol } from "./CControl";
+import { CControl } from "./CControl";
 
 type TCControls = {
     board: TBoard
+    value: string | null,
+    setValue: Dispatch<string | null>;
 }
 
-export function CControls({ board }: TCControls) {
+export function CControls({ board, value, setValue }: TCControls) {
     const size = board.length;
     const controls = board.reduce((acc, item) => {
         item.forEach(value => {
@@ -20,7 +23,9 @@ export function CControls({ board }: TCControls) {
     
     return (
         <div className="controls">
-            {controls.map((control, index) => <CContol key={index} text={index + 1} count={control} />)}
+            {controls.map((control, index) => (
+                <CControl key={index} text={index + 1} count={control} value={value} setValue={setValue} />
+            ))}
         </div>
     );
 }

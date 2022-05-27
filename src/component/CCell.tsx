@@ -1,5 +1,6 @@
 type TCCell = {
-  value: string;
+  text: string;
+  value: string | null;
 };
 
 export type TCellValue = number | null;
@@ -11,6 +12,7 @@ export type TCell = {
   readonly: boolean;
 }
 
-export default function CCell({ value }: TCCell) {
-    return <div className='cell'>{value}</div>
+export default function CCell({ text, value }: TCCell) {
+    const className =  text === String(value) ? 'cell active': 'cell'
+    return <div className={className}>{text}</div>
 }

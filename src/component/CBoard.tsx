@@ -4,13 +4,16 @@ export type TBoard = Array<Array<string>>
 
 type TCBoard = {
     board: TBoard;
+    value: string | null,
 };
 
-export default function CBoard({ board }: TCBoard) {
+export default function CBoard({ board, value }: TCBoard) {
     return (
         <div className='board'>
             {board.map((row, rowIndex) => (
-                row.map((value, colIndex) => <CCell key={`${rowIndex}_${colIndex}`} value={value} />)
+                row.map((text, colIndex) => (
+                    <CCell key={`${rowIndex}_${colIndex}`} text={text} value={value} />
+                ))
             ))}
         </div>
     );

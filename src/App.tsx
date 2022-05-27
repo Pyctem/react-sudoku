@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import CBoard from "./component/CBoard";
 import { TCell } from "./component/CCell";
+import { CControls } from './component/CControls';
 import { generateBoard, getSquareByPosition } from "./lib";
 import './App.css';
-import { CControls } from './component/CControls';
 
 function App() {
     const size = 9;
     const board = generateBoard(size);
+
+    const [value, setValue] = useState<string | null>(null);
 
     class Cell implements TCell {
         row = 0;
@@ -29,8 +31,8 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">Sudoku</header>
-            <CBoard board={board} />
-            <CControls board={board} />
+            <CBoard board={board} value={value} />
+            <CControls board={board} value={value} setValue={setValue} />
         </div>
     );
 }

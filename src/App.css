@@ -32,6 +32,10 @@
   background-color: #282c34;
 }
 
+.cell.active {
+  background-color: #CB550EFF;
+}
+
 .controls {
   padding: 20px 0;
   display: grid;
@@ -50,6 +54,11 @@
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, .3);
   background: transparent;
+}
+
+.control.active {
+  border: none;
+  background-color: #CB550EFF;
 }
 
 .control .text {
