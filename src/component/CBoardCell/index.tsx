@@ -35,11 +35,12 @@ function CBoardCell({ row, col }: TCBoardCell) {
     const clickHandler = action(() => {
         if (active) {
             board[row][col] = active
-        }
-        if (isSelected) {
-            game.selected = [];
         } else {
-            game.selected = [ row, col ];
+            if (isSelected) {
+                game.selected = [];
+            } else {
+                game.selected = [ row, col ];
+            }
         }
     })
 

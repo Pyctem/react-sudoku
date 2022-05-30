@@ -1,31 +1,16 @@
-import { useContext } from "react";
-import { CButton } from "../CButton";
-import { BoardContext, GameContext } from "../CApp";
+import { observer } from "mobx-react";
+import { countStore } from "../../store/board";
+import CBoardControl from "../CBoardControl";
 import './index.scss';
 
-export default function CBoardControls() {
-    const game = useContext(GameContext);
-    const board = useContext(BoardContext);
+function CBoardControls() {
+    const count = countStore.get();
 
-    const controls = board.reduce((acc, item) => {
-        item.forEach(value => {
-            if (value) {
-                const numberValue = Number(value);
-                const index = numberValue - 1;
-                acc[index] = acc[index] - 1;
-            }
-        })
-        return acc;
-    }, (new Array(game.size).fill(game.size)));
-    
     return (
         <div className="board-controls">
-            {controls.map((control, index) => (
-                <CButton className="board-controls__button">
-                    <span className="board-controls__value">{index + 1}</span>
-                    {/*<span className="count">{count}</span>*/}
-                </CButton>
-            ))}
+            {Array.from(count.keys()).map(key => <CBoardControl key={key} value={key} />)}
         </div>
     );
 }
+
+export default observer(CBoardControls)
