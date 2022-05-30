@@ -1,0 +1,33 @@
+.board-controls {
+  padding: 10px 0;
+  display: grid;
+  gap: 7px;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.board-controls__button {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .3);
+  &.active {
+    background-color: #CB550EFF;
+  }
+}
+
+.board-controls__value {
+  font-size: 1.7rem;
+}
+
+.board-controls__count {
+  font-size: .6rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  line-height: 1;
+  text-align: center;
+}

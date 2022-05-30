@@ -1,0 +1,19 @@
+.board__cell {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #282c34;
+}
+
+.board__button {
+  width: 80%;
+  height: 80%;
+  border: none;
+  border-radius: 50%;
+  line-height: 1.5;
+  &.active {
+    background-color: #CB550EFF;
+  }
+}

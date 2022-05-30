@@ -1,9 +1,12 @@
 import { useContext } from "react";
-import { BoardContext } from "../../App";
-import CCell from "../CCell";
+import { observer } from "mobx-react";
+import CBoardCell from "../CBoardCell";
+import { BoardContext } from "../CApp";
+import './index.scss';
 
-export default function CBoard() {
+function CBoard() {
     const board = useContext(BoardContext);
+
     if (!board.length) {
         return null;
     }
@@ -12,9 +15,11 @@ export default function CBoard() {
         <div className='board'>
             {board.map((row, rowIndex) => (
                 row.map((text, colIndex) => (
-                    <CCell key={`${rowIndex}_${colIndex}`} text={text} value={'1'} />
+                    <CBoardCell key={`${rowIndex}_${colIndex}`} row={rowIndex} col={colIndex} />
                 ))
             ))}
         </div>
     );
 }
+
+export default observer(CBoard);

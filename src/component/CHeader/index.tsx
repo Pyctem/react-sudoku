@@ -1,5 +1,7 @@
 import './index.scss';
 
-export default function CHeader() {
+function CHeader() {
     return <header>Sudoku</header>;
 }
+
+export default CHeader;
