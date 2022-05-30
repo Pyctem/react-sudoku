@@ -1,10 +1,10 @@
 import { Dispatch } from "react";
-import { TBoard } from "./CBoard";
+import { TBoard } from "../store/board";
 import { CControl } from "./CControl";
 
 type TCControls = {
-    board: TBoard
-    value: string | null,
+    board: TBoard;
+    value: string | null;
     setValue: Dispatch<string | null>;
 }
 
