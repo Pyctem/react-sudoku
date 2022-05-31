@@ -25,7 +25,7 @@ function CBoardCell({ row, col }: TCBoardCell) {
     const value = board[row][col];
     const [ selectedRow, selectedCol ] = game.selected;
     const { active } = game;
-    const buttonBaseClassName = 'board__button';
+    const buttonBaseClassName = 'board__text';
     const isActive = value && value === active;
     const isSelected = selectedRow === row && selectedCol === col;
     const buttonClassName = isActive || isSelected
@@ -34,7 +34,11 @@ function CBoardCell({ row, col }: TCBoardCell) {
 
     const clickHandler = action(() => {
         if (active) {
-            board[row][col] = active
+            if (isActive) {
+                board[row][col] = ''
+            } else {
+                board[row][col] = active
+            }
         } else {
             if (isSelected) {
                 game.selected = [];
@@ -46,7 +50,9 @@ function CBoardCell({ row, col }: TCBoardCell) {
 
     return (
         <div className={'board__cell'}>
-            <CButton onClick={clickHandler} className={buttonClassName}>{value}</CButton>
+            <CButton onClick={clickHandler} className={'board__button'}>
+                <span className={buttonClassName}>{value}</span>
+            </CButton>
         </div>
     );
 }

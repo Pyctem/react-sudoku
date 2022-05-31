@@ -5,6 +5,7 @@ import CGameControls from '../GameControls';
 import CBoardControls from "../CBoardControls";
 import { gameStore, TGame } from '../../store/game';
 import { boardStore, TObservableArray } from '../../store/board';
+import {CTimer} from "../CTimer";
 
 export const GameContext = createContext<TGame>(gameStore);
 export const BoardContext = createContext<TObservableArray>(boardStore);
@@ -27,6 +28,7 @@ function CApp() {
         <GameContext.Provider value={gameStore}>
             <BoardContext.Provider value={boardStore}>
                 <CHeader />
+                <CTimer />
                 <CGameControls />
                 <CBoard />
                 <CBoardControls />
