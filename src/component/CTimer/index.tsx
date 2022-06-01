@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import './index.scss';
 
 function CTimer() {
     const [ startTime ] = useState(Date.now());
@@ -9,7 +10,18 @@ function CTimer() {
         setCurrentTime(Date.now());
     }, 1000);
 
-    return <div>{Math.round((currentTime - startTime) / 1000)} s</div>
+    const date = new Date(currentTime - startTime);
+    const hours = date.getUTCHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return (
+        <div className="timer">
+            {Boolean(hours) && <span>{hours}H </span>}
+            {Boolean(minutes) && <span>{minutes}M </span>}
+            <span>{seconds}S</span>
+        </div>
+    )
 }
 
-export { CTimer };
+export default CTimer;

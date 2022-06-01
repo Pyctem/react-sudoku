@@ -38,7 +38,7 @@ function CBoardControl({ value }: TCBoardControl) {
     return (
         <CButton className={buttonClassName} onClick={clickHandler}>
             <span className="board-controls__value">{value}</span>
-            <span className="board-controls__count">{count.get(value)}</span>
+            {Boolean(count.get(value)) && <span className="board-controls__count">{count.get(value)}</span>}
         </CButton>
     )
 }
