@@ -1,14 +1,20 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import './index.scss';
 
 function CTimer() {
     const [ startTime ] = useState(Date.now());
     const [ currentTime, setCurrentTime ] = useState(Date.now());
-    const reqAnFr = useRef(0);
+    const intervalRef = useRef(0);
 
-    reqAnFr.current = window.setInterval(() => {
+    intervalRef.current = window.setInterval(() => {
         setCurrentTime(Date.now());
     }, 1000);
+
+    useEffect(() => {
+        return () => {
+            window.clearInterval(intervalRef.current);
+        }
+    });
 
     const date = new Date(currentTime - startTime);
     const hours = date.getUTCHours();

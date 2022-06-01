@@ -1,7 +1,7 @@
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { useContext } from "react";
-import { GameContext, BoardContext } from "../CApp";
+import { boardStore } from "../../store/board";
+import { gameStore } from "../../store/game";
 import { CButton } from "../CButton";
 import './index.scss';
 
@@ -20,11 +20,9 @@ export type TCell = {
 }
 
 function CBoardCell({ row, col }: TCBoardCell) {
-    const game = useContext(GameContext);
-    const board = useContext(BoardContext);
-    const value = board[row][col];
-    const [ selectedRow, selectedCol ] = game.selected;
-    const { active } = game;
+    const value = boardStore[row][col];
+    const [ selectedRow, selectedCol ] = gameStore.selected;
+    const { active } = gameStore;
     const buttonBaseClassName = 'board__text';
     const isActive = value && value === active;
     const isSelected = selectedRow === row && selectedCol === col;
@@ -35,15 +33,15 @@ function CBoardCell({ row, col }: TCBoardCell) {
     const clickHandler = action(() => {
         if (active) {
             if (isActive) {
-                board[row][col] = ''
+                boardStore[row][col] = ''
             } else {
-                board[row][col] = active
+                boardStore[row][col] = active
             }
         } else {
             if (isSelected) {
-                game.selected = [];
+                gameStore.selected = [];
             } else {
-                game.selected = [ row, col ];
+                gameStore.selected = [ row, col ];
             }
         }
     })

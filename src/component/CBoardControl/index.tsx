@@ -1,33 +1,30 @@
-import { useContext } from "react";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { CButton } from "../CButton";
-import { BoardContext, GameContext } from "../CApp";
-import { countStore } from "../../store/board";
+import { boardStore, countStore } from "../../store/board";
+import { gameStore } from "../../store/game";
 
 type TCBoardControl = {
     value: number;
 }
 
 function CBoardControl({ value }: TCBoardControl) {
-    const game = useContext(GameContext);
-    const board = useContext(BoardContext);
     const count = countStore.get();
-    const { active } = game;
+    const { active } = gameStore;
 
     const clickHandler = action(() => {
-        const [ row, col ] = game.selected;
+        const [ row, col ] = gameStore.selected;
         if ( typeof row === 'number' && typeof col === 'number') {
-            if (board[row][col] === String(value)) {
-                board[row][col] = '';
+            if (boardStore[row][col] === String(value)) {
+                boardStore[row][col] = '';
             } else {
-                board[row][col] = String(value);
+                boardStore[row][col] = String(value);
             }
         } else {
             if (active === String(value)) {
-                game.active = '';
+                gameStore.active = '';
             } else {
-                game.active = String(value);
+                gameStore.active = String(value);
             }
         }
     });

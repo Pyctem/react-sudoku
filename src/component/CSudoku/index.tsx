@@ -1,7 +1,7 @@
-import {Route, Routes, useNavigate} from "react-router-dom";
+import { useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import PHome from "../../page/Home";
 import PBoard from "../../page/Board";
-import {useEffect} from "react";
 import { boardStore } from "../../store/board";
 
 function CSudoku() {
