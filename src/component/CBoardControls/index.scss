@@ -14,7 +14,7 @@
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, .3);
   &.active {
-    border: none;
+    border-color: transparent;
     background-color: #CB550EFF;
   }
 }
@@ -31,4 +31,26 @@
   bottom: 1px;
   line-height: 1;
   text-align: center;
+}
+
+.board-buttons {
+  display: flex;
+  padding: 10px 0;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 278px;
+}
+
+.board-button {
+  font-size: 0.7rem;
+  width: 31%;
+  height: 30px;
+  flex-shrink: 1;
+  border-radius: 15px;
+  border: 1px solid rgba(white, 0.3);
+
+  &:hover {
+    border-color: transparent;
+    background-color: #cb550e;
+}
 }

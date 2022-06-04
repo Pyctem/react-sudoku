@@ -1,4 +1,4 @@
-import { TBoard } from "../store/board";
+import { TBoard, TObservableArray } from "../store/board";
 import { generateRandomInteger, isUnique } from "../lib";
 
 export function generate(level: string, size: number = 9): TBoard {
@@ -130,4 +130,16 @@ export function setValue(board: TBoard, row: number, col: number, value: string)
     board[row][col] = value;
     
     return value;
+}
+
+export function setToLocal(boardStore: TObservableArray, time: number, level: string): void {
+    const board = boardStore.toJSON();
+    localStorage.setItem(`sudoku_${level}`, JSON.stringify({ time, board }));
+}
+
+export function getFromLocal(level: string): void | { board: TBoard, time: number } {
+    const data = localStorage.getItem(`sudoku_${level}`);
+    if (data) {
+        return JSON.parse(data);
+    }
 }

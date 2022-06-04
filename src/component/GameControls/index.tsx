@@ -1,27 +1,17 @@
-import { action } from "mobx";
-import { useNavigate } from "react-router-dom";
-import { CButton } from "../CButton";
-import { generate } from "../../controller/Game";
-import { boardStore } from "../../store/board";
+import { gameStore } from "../../store/game";
+import { getFromLocal } from "../../controller/Game";
+import CNewGame from "../CNewGame";
+import CResumeGame from "../CResumeGame";
 import './index.scss';
+import CLevel from "../CLevel";
 
 export default function CGameControls() {
-    const navigate = useNavigate();
-
-    const start = action(() => {
-        const newBoard = generate('hard');
-        boardStore.replace(newBoard);
-        navigate('/board', { replace: true });
-    });
-
+    const savedGame = getFromLocal(gameStore.level);
     return (
         <div className="game-controls">
-            <div className="game-controls__row">
-                <CButton className="game-controls__button" onClick={start}>New Game</CButton>
-            </div>
-            <div className="game-controls__row">
-                <CButton className="game-controls__button">Resume</CButton>
-            </div>
+            <CLevel />
+            <CNewGame />
+            {Boolean(savedGame) && <CResumeGame />}
         </div>
     );
 }

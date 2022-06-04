@@ -1,22 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { action } from "mobx";
+import { observer } from "mobx-react";
+import { useCallback, useEffect, useRef } from "react";
+import { gameStore } from "../../store/game";
 import './index.scss';
 
 function CTimer() {
-    const [ startTime ] = useState(Date.now());
-    const [ currentTime, setCurrentTime ] = useState(Date.now());
     const intervalRef = useRef(0);
 
-    intervalRef.current = window.setInterval(() => {
-        setCurrentTime(Date.now());
-    }, 1000);
+    const callback = useCallback(action(() => {
+        gameStore.time += 1000;
+    }), []);
 
     useEffect(() => {
+        intervalRef.current = window.setInterval(callback, 1000);
+
         return () => {
             window.clearInterval(intervalRef.current);
         }
-    });
+    }, []);
 
-    const date = new Date(currentTime - startTime);
+    const date = new Date(gameStore.time);
     const hours = date.getUTCHours();
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
@@ -30,4 +33,4 @@ function CTimer() {
     )
 }
 
-export default CTimer;
+export default observer(CTimer);
