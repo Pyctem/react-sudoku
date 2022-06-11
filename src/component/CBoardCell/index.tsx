@@ -1,55 +1,53 @@
+import { block } from 'bem-cn';
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { boardStore } from "../../store/board";
 import { gameStore } from "../../store/game";
+import { errorStore } from "../../store/error";
 import { CButton } from "../CButton";
+import { ICell } from "../../model/ICell";
 import './index.scss';
 
+const clazz = block('cell');
+
 type TCBoardCell = {
-  row: number;
-  col: number;
+    cell: ICell;
 };
 
-export type TCellValue = number | null;
-export type TCell = {
-  row: number;
-  col: number;
-  square: string;
-  value: TCellValue;
-  readonly: boolean;
-}
-
-function CBoardCell({ row, col }: TCBoardCell) {
-    const value = boardStore[row][col];
-    const [ selectedRow, selectedCol ] = gameStore.selected;
-    const { active } = gameStore;
-    const buttonBaseClassName = 'board__text';
-    const isActive = value && value === active;
-    const isSelected = selectedRow === row && selectedCol === col;
-    const buttonClassName = isActive || isSelected
-        ? buttonBaseClassName + ' active'
-        : buttonBaseClassName;
+function CBoardCell({ cell }: TCBoardCell) {
+    const { row, col, value, readonly } = cell;
+    const { selectedCell, selectedValue } = gameStore;
+    const isError = !readonly && errorStore.has(`${row}_${col}`);
+    const isMatched = Boolean(value) && value === selectedValue;
+    const isSelected = selectedCell?.x === row && selectedCell?.y === col;
 
     const clickHandler = action(() => {
-        if (active) {
-            if (isActive) {
-                boardStore[row][col] = ''
+        if (readonly) {
+            return;
+        }
+        if (selectedValue) {
+            if (isMatched) {
+                cell.value = null;
             } else {
-                boardStore[row][col] = active
+                cell.value = selectedValue
+            }
+            if (isError) {
+                errorStore.delete(`${row}_${col}`);
             }
         } else {
             if (isSelected) {
-                gameStore.selected = [];
+                gameStore.selectedCell = null;
             } else {
-                gameStore.selected = [ row, col ];
+                gameStore.selectedCell = { x: row, y: col };
             }
         }
     })
 
     return (
-        <div className={'board__cell'}>
-            <CButton onClick={clickHandler} className={'board__button'}>
-                <span className={buttonClassName}>{value}</span>
+        <div className={clazz()}>
+            <CButton onClick={clickHandler} className={clazz('button')}>
+                <span className={clazz('text').is({ error: isError, select: isSelected, match: isMatched, block: readonly })}>
+                    {value}
+                </span>
             </CButton>
         </div>
     );

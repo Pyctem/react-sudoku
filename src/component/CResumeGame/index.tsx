@@ -6,17 +6,21 @@ import { boardStore } from "../../store/board";
 import { gameStore } from "../../store/game";
 import { CButton } from "../CButton";
 
-function CReaumeGame() {
+function CResumeGame() {
     const navigate = useNavigate();
     const savedGame = getFromLocal(gameStore.level);
 
     const clickHandler = action(() => {
         if (savedGame) {
             gameStore.time = savedGame.time;
-            boardStore.replace(savedGame.board);            
+            boardStore.replace(savedGame.cells);
             navigate('/board', { replace: true });
         }
     });
+
+    if (!Boolean(savedGame)) {
+        return null;
+    }
 
     return (
         <div className="game-controls__row">
@@ -25,4 +29,4 @@ function CReaumeGame() {
     )
 }
 
-export default observer(CReaumeGame);
+export default observer(CResumeGame);

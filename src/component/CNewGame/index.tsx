@@ -10,9 +10,10 @@ function CNewGame() {
     const navigate = useNavigate();
 
     const clickHandler = action(() => {
-        const newBoard = generate(gameStore.level);
+        const cells = generate(gameStore.level, 9);
         gameStore.time = 0;
-        boardStore.replace(newBoard);
+        gameStore.solved = false;
+        boardStore.replace(cells);
         navigate('/board', { replace: true });
     });
 
