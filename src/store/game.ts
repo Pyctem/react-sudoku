@@ -1,31 +1,57 @@
-import { observable, reaction } from 'mobx';
-import { setToLocal } from '../controller/Game';
-import { boardStore } from './board';
+import {computed, observable, reaction} from 'mobx';
+import { boardStore } from "./board";
+import { IGame } from "../model/IGame";
+import {removeFromLocal, setToLocal} from '../controller/Game';
 
-export type TLevel = 'easy' | 'medium' | 'hard';
-export type TSelected = [row: number, col: number] | never[];
-export type TGame = {
-    size: number;
-    time: number;
-    level: TLevel;
-    active: string;
-    selected: TSelected;
-};
+export const levels = ['easy', 'medium', 'hard'] as const;
 
-
-const game = {
+export const gameStore = observable<IGame>({
     size: 9,
     time: 0,
-    level: 'medium' as TLevel,
-    active: '',
-    selected: []
-}
+    level: 'easy',
+    cells: boardStore,
+    selectedCell: null,
+    selectedValue: null,
+    counts: computed<Map<number, number>>(
+        () => {
+            const map = new Map();
+            for (let i = 1; i <= gameStore.size; i++) {
+                map.set(i, gameStore.size);
+            }
 
-export const gameStore = observable<TGame>(game);
+            gameStore.cells.forEach(cell => {
+                if (cell.value) {
+                    map.set(cell.value, map.get(cell.value) - 1);
+                }
+            });
+
+            return map;
+        },
+        {
+            equals: (a, b) => {
+                return Array.from(a).toString() === Array.from(b).toString()
+            }
+        }
+    ),
+    filled: computed(() => Boolean(boardStore.length) && boardStore.every(cell => Boolean(cell.value))),
+    solved: false,
+});
 
 reaction(
     () => gameStore.time,
-    (time) => {
-        setToLocal(boardStore, time, gameStore.level);
+    (time) => setToLocal(gameStore)
+)
+
+reaction(
+    () => gameStore.cells,
+    () => setToLocal(gameStore)
+)
+
+reaction(
+    () => gameStore.solved,
+    (solved) => {
+        if (solved) {
+            removeFromLocal(gameStore.level);
+        }
     }
 )

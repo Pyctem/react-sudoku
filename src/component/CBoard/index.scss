@@ -1,5 +1,6 @@
 .board {
-  margin: 10px 0;
+  aspect-ratio: 1;
+  height: 60vh;
   display: grid;
   gap: 1px;
   grid-template-rows: repeat(9, 1fr);

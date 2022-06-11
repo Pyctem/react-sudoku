@@ -1,145 +1,212 @@
-import { TBoard, TObservableArray } from "../store/board";
-import { generateRandomInteger, isUnique } from "../lib";
+import { generateRandomInteger } from "../lib";
+import { levelConfig } from "../config";
+import { ICell } from "../model/ICell";
+import { IGame, TCells, TLevel } from "../model/IGame";
 
-export function generate(level: string, size: number = 9): TBoard {
-    const board = (new Array(size).fill(size)).map(() => (new Array(size)).fill(''));
+interface TValidateParams {
+    cells: TCells;
+    row?: number;
+    col?: number;
+    square?: number;
+}
+
+type TFnSolve = (cells: TCells) => TCells | null;
+type TFnReset = (cells: TCells) => TCells;
+type TFnPrepare = (cells: TCells, count: number) => TCells;
+type TFnGenerate = (level: TLevel, size: number) => TCells;
+type TFnValidate = (params: TValidateParams) => Array<string>;
+type TFnValidateBoard = (cells: TCells) => Set<string>;
+type TFnGetCellsBy = (cells: TCells, by: number) => TCells;
+type TFnGetEmptyCell = (cells: TCells) => ICell | null;
+type TFnSetLocal = (game: IGame) => void;
+type TFnGetLocal = (level: TLevel) => IGame | void;
+type TFnRemoveFromLocal = (level: TLevel) => void;
+
+export const generate: TFnGenerate = function (level, size = 9) {
+    const totalSize = Math.pow(size, 2);
+    const squareSize = Math.sqrt(size);
+    const board = (new Array(totalSize).fill(size)).map((item, index) => {
+        const x = Math.floor(index / size);
+        const y = index % size;
+        return {
+            value: null,
+            row: x,
+            col: y,
+            square: Math.floor(x / squareSize) * squareSize + Math.floor(y / squareSize),
+            readonly: true
+        }
+    });
     solve(board);
-    setLevel(board, 50);
+    setLevel(board, levelConfig[size][level]);
 
     return board;
 }
-
-export function validate(board: TBoard, row: number, col: number, value?: string): TBoard | null {
-    const rowValues = getValuesByRow(board, row);
-    if (!isUnique([...rowValues, value])) {
-        return null;
-    }
-
-    const colValues = getValuesByCol(board, col);
-    if (!isUnique([...colValues, value])) {
-        return null;
-    }
-
-    const squareValues = getValuesBySquare(board, row, col);
-    if (!isUnique([...squareValues, value])) {
-        return null;
-    }
-
-    return board;
+export const reset: TFnReset = function (cells) {
+    return cells.map(cell => ({ ...cell, value: !cell.readonly ? null : cell.value }));
 }
+export const validate: TFnValidate = function({ cells, row, col, square}) {
+    const result: Array<string> = [];
 
-export function solve(board: TBoard): TBoard | null {
+    if (typeof row === 'number') {
+        getCellsByRow(cells, row)
+            .reduce<Map<number, Array<string>>>(
+                (map, cell ) => {
+                    if (!cell.value) {
+                        return map;
+                    }
+                    if (map.has(cell.value)) {
+                        (map.get(cell.value) as Array<string>).push(`${cell.row}_${cell.col}`);
+                    } else {
+                        map.set(cell.value, [`${cell.row}_${cell.col}`])
+                    }
+                    return map;
+                },
+                new Map()
+            ).forEach((cells) => {
+                if (cells.length > 1) {
+                    result.push(...cells);
+                }
+            })
+    }
+
+    if (typeof col === 'number') {
+        getCellsByCol(cells, col)
+            .reduce<Map<number, Array<string>>>(
+                (map, cell ) => {
+                    if (!cell.value) {
+                        return map;
+                    }
+                    if (map.has(cell.value)) {
+                        (map.get(cell.value) as Array<string>).push(`${cell.row}_${cell.col}`);
+                    } else {
+                        map.set(cell.value, [`${cell.row}_${cell.col}`])
+                    }
+                    return map;
+                },
+                new Map()
+            ).forEach((cells) => {
+                if (cells.length > 1) {
+                    result.push(...cells);
+                }
+            });
+    }
+
+    if (typeof square === 'number') {
+        getCellsBySquare(cells, square)
+            .reduce<Map<number, Array<string>>>(
+                (map, cell ) => {
+                    if (!cell.value) {
+                        return map;
+                    }
+                    if (map.has(cell.value)) {
+                        (map.get(cell.value) as Array<string>).push(`${cell.row}_${cell.col}`);
+                    } else {
+                        map.set(cell.value, [`${cell.row}_${cell.col}`])
+                    }
+                    return map;
+                },
+                new Map()
+            ).forEach((cells) => {
+                if (cells.length > 1) {
+                    result.push(...cells);
+                }
+            });
+    }
+
+    return result;
+}
+export const validateBoard: TFnValidateBoard = function (cells) {
+    const result = [];
+    const size = Math.sqrt(cells.length);
+    for(let i = 0; i < size; i++) {
+        result.push(...validate({ cells, row: i, col: i, square: i }));
+    }
+    return new Set(result);
+}
+export const solve: TFnSolve = function(cells) {
     let result = null;
-    const size = board.length;
-    const empty = getEmpty(board);
+    const size = Math.sqrt(cells.length);
+    const cell = getEmptyCell(cells);
 
-    if (!empty) {
-        return board;
+    if (!cell) {
+        return cells;
     }
 
-    const [row, col] = empty;
     const values = new Set();
 
     while (values.size < size) {
-        let value = String(generateRandomInteger(1, size));
+        let value = generateRandomInteger(1, size);
 
         while (values.has(value)) {
-            value = String(generateRandomInteger(1, size));
+            value = generateRandomInteger(1, size);
         }
-
-        const isValid = validate(board, row, col, value);
 
         values.add(value);
 
-        if (!isValid) {
+        cell.value = value;
+
+        const validResult = validate({ cells, row: cell.row, col: cell.col, square: cell.square });
+
+        if (validResult.length) {
+            cell.value = null;
             continue;
         }
 
-        setValue(board, row, col, value);
-
-        const solution = solve(board);
+        const solution = solve(cells);
 
         if (solution) {
             result = solution;
             break;
         } else {
-            setValue(board, row, col, '');
+            cell.value = null;
         }
     }
 
     return result;
 }
+const setLevel:TFnPrepare = function(cells, count) {
+    const index = generateRandomInteger(0, cells.length - 1);
 
-export function setLevel(board: TBoard, count: number): TBoard {
-    const size = board.length;
-    const row = generateRandomInteger(0, size - 1);
-    const col = generateRandomInteger(0, size - 1);
-    const isEmpty = !Boolean(board[row][col]);
-
-    if (isEmpty) {
-        return setLevel(board, count);
+    if (!cells[index].value) {
+        return setLevel(cells, count);
     }
 
-    setValue(board, row, col, '');
+    cells[index].value = null;
+    cells[index].readonly = false;
 
     count--;
 
     if (count) {
-        return setLevel(board, count);
+        return setLevel(cells, count);
     }
 
-    return board;
+    return cells;
 }
-
-export function getEmpty(board: TBoard): number[] | null {
-    const size = board.length;
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
-            if (!board[row][col]) {
-                return [row, col];
-            }
-        }
+const getEmptyCell:TFnGetEmptyCell = function(cells) {
+    const cell = cells.find(cell => !cell.value);
+    if (cell) {
+        return cell;
     }
     return null;
 }
-
-export function getValuesByRow(board: TBoard, row: number): Array<string> {
-    return board.at(row)?.filter(value => Boolean(value)) || [];
+const getCellsByRow: TFnGetCellsBy = function(cells, row) {
+    return cells.filter(item => item.row === row);
 }
-
-export function getValuesByCol(board: TBoard, col: number): Array<string> {
-    return board.filter(row => Boolean(row.at(col))).map(row => (row?.at(col) as string)) || [];
+const getCellsByCol: TFnGetCellsBy = function(cells, col) {
+    return cells.filter(item => item.col === col);
 }
-
-export function getValuesBySquare(board: TBoard, row: number, col: number): Array<string> {
-    const squareSize = Math.sqrt(board.length);
-    const squareRow = Math.floor( row / squareSize ) * squareSize;
-    const squareCol = Math.floor( col / squareSize ) * squareSize;
-    return board.reduce((acc, row, rowIndex) => {
-        if (rowIndex >= squareRow && rowIndex < squareRow + squareSize) {
-            const values = row.filter((value, colIndex) => {
-                return colIndex >= squareCol && colIndex < squareCol + squareSize && Boolean(board[rowIndex][colIndex]);
-            })
-            acc.push(...values);
-        }
-        return acc;
-    }, []);
+const getCellsBySquare: TFnGetCellsBy = function(cells, square) {
+    return cells.filter(item => item.square === square);
 }
-
-export function setValue(board: TBoard, row: number, col: number, value: string): typeof value | false {
-    board[row][col] = value;
-    
-    return value;
+export const setToLocal:TFnSetLocal = function(game): void {
+    localStorage.setItem(`sudoku_${game.level}`, JSON.stringify(game));
 }
-
-export function setToLocal(boardStore: TObservableArray, time: number, level: string): void {
-    const board = boardStore.toJSON();
-    localStorage.setItem(`sudoku_${level}`, JSON.stringify({ time, board }));
-}
-
-export function getFromLocal(level: string): void | { board: TBoard, time: number } {
+export const getFromLocal:TFnGetLocal = function(level) {
     const data = localStorage.getItem(`sudoku_${level}`);
     if (data) {
         return JSON.parse(data);
     }
+}
+export const removeFromLocal: TFnRemoveFromLocal = function(level) {
+    localStorage.removeItem(`sudoku_${level}`)
 }

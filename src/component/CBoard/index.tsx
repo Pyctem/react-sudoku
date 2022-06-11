@@ -1,8 +1,10 @@
+import { block } from "bem-cn";
 import { observer } from "mobx-react";
 import CBoardCell from "../CBoardCell";
 import { boardStore } from "../../store/board";
 import './index.scss';
 
+export const boardBem = block('board');
 
 function CBoard() {
     if (!boardStore.length) {
@@ -10,12 +12,8 @@ function CBoard() {
     }
     
     return (
-        <div className='board'>
-            {boardStore.map((row, rowIndex) => (
-                row.map((text, colIndex) => (
-                    <CBoardCell key={`${rowIndex}_${colIndex}`} row={rowIndex} col={colIndex} />
-                ))
-            ))}
+        <div className={boardBem()}>
+            {boardStore.map(cell => <CBoardCell key={`${cell.row}_${cell.col}`} cell={cell} />)}
         </div>
     );
 }
